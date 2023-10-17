@@ -1,4 +1,4 @@
-# WhatsApp-Clone
+# Full Stack Chat application
 
 I have developed a Full Stack Web Application using the MERN (MongoDB, Express.js, React.js, Node.js) stack that allows users to send end-to-end messages online. The application also includes features such as displaying the status of users (whether they are online or offline), enabling users to share pictures and files, and providing additional details such as filtering users and displaying the timestamp of sent messages.
 
