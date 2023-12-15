@@ -1,17 +1,51 @@
-import express from 'express';
-import Route from './routes/route.js';
-//in js we need to write .js while in jsx we dont
-import cors from 'cors';
-//cors is used if we have page in one port and any operation leads use to another port then search engine shows error ...cors handles this error
-
-import bodyParser from 'body-parser';
-import Connection from './database/db.js';
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const authRoutes = require("./routes/auth");
+const messageRoutes = require("./routes/messages");
 const app = express();
-app.use(cors());
-app.use(bodyParser.json({extended : true}));
-app.use(bodyParser.urlencoded({extended : true}));
-app.use('/',Route);
-Connection();
-const PORT =8000;
+const socket = require("socket.io");
+require("dotenv").config();
 
-app.listen(PORT,()=> console.log(`SERVER IS successfull at that ${PORT}`)); 
+app.use(cors());
+app.use(express.json());
+
+mongoose
+  .connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("DB Connetion Successfull");
+  })
+  .catch((err) => {
+    console.log(err.message);
+  });
+
+app.use("/api/auth", authRoutes);
+app.use("/api/messages", messageRoutes);
+
+const server = app.listen(process.env.PORT, () =>
+  console.log(`Server started on ${process.env.PORT}`)
+);
+const io = socket(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    credentials: true,
+  },
+});
+
+global.onlineUsers = new Map();
+io.on("connection", (socket) => {
+  global.chatSocket = socket;
+  socket.on("add-user", (userId) => {
+    onlineUsers.set(userId, socket.id);
+  });
+
+  socket.on("send-msg", (data) => {
+    const sendUserSocket = onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("msg-recieve", data.msg);
+    }
+  });
+});
