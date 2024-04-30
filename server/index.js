@@ -30,7 +30,7 @@ const server = app.listen(process.env.PORT, () =>
 );
 const io = socket(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000","https://full-stack-chat-application-sepia.vercel.app"],
     credentials: true,
   },
 });
