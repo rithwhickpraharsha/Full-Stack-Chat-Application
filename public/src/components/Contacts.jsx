@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Logo from "../assets/logo.png";
+import { VscAccount } from "react-icons/vsc";
+import { useNavigate } from "react-router-dom";
+import { getUser } from "../utils/APIRoutes";
+import axios from "axios";
+
 
 export default function Contacts({ contacts, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
+  const navigate = useNavigate();
   useEffect(async () => {
     const data = await JSON.parse(
       localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
     );
-    setCurrentUserName(data.username);
-    setCurrentUserImage(data.avatarImage);
+    const user = await axios.post(getUser, { userId: data._id });
+    setCurrentUserName(user.data.user.username);
+    setCurrentUserImage(user.data.user.avatarImage);
   }, []);
   const changeCurrentChat = (index, contact) => {
     setCurrentSelected(index);
@@ -54,8 +61,13 @@ export default function Contacts({ contacts, changeChat }) {
                 alt="avatar"
               />
             </div>
-            <div className="username">
-              <h2>{currentUserName}</h2>
+            <div style={{ display: "flex", justifyContent: "space-around" }} className="username">
+              <h2 style={{
+                marginRight: "5px"
+              }}>{currentUserName}</h2>
+              <div className="update" onClick={() => { navigate('/update') }}>
+                <VscAccount />
+              </div>
             </div>
           </div>
         </Container>
@@ -113,12 +125,15 @@ const Container = styled.div`
         }
       }
       .username {
+         display : flex;
+         justifyContent: space-around;
         h3 {
           color: white;
-        }
+}
       }
     }
     .selected {
+      
       background-color: black;
     }
   }
@@ -140,6 +155,12 @@ const Container = styled.div`
         color: yellow;
       }
     }
+      .update{
+            svg {
+    font-size: 1.3rem;
+    color: #ebe7ff;
+  }
+      }
     @media screen and (min-width: 720px) and (max-width: 1080px) {
       gap: 0.5rem;
       .username {

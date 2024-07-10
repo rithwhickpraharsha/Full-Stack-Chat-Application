@@ -20,7 +20,7 @@ module.exports.login = async (req, res, next) => {
 module.exports.register = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
-   
+
     const usernameCheck = await User.findOne({ username });
     if (usernameCheck)
       return res.json({ msg: "Username already used", status: false });
@@ -30,9 +30,9 @@ module.exports.register = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-      username:username,
-      email:email,
-      password:hashedPassword
+      username: username,
+      email: email,
+      password: hashedPassword
     });
     return res.json({ status: true, user });
   } catch (ex) {
@@ -85,3 +85,28 @@ module.exports.logOut = (req, res, next) => {
     next(ex);
   }
 };
+
+module.exports.update = async (req, res, next) => {
+  try {
+    console.log("Update started");
+    const data = await User.findByIdAndUpdate(req.body.userId, { username: req.body.username, avatarImage: req.body.avatar });
+    const userUpdate = await User.findById(req.body.userId);
+    console.log(userUpdate);
+    return res.status(200).json({ message: "User Update Successfull" });
+
+  }
+  catch (ex) {
+    next(ex);
+  }
+}
+
+module.exports.user = async (req, res, next) => {
+  try {
+
+    const data = await User.findOne({ _id: req.body.userId });
+    return res.status(200).json({ user: data });
+  }
+  catch (err) {
+    next(err)
+  }
+}
