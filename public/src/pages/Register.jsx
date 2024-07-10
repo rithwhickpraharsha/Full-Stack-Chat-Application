@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { registerRoute } from "../utils/APIRoutes";
 
 export default function Register() {
-  
+
   const navigate = useNavigate();
   const toastOptions = {
     position: "bottom-right",
@@ -137,7 +137,7 @@ const FormContainer = styled.div`
   justify-content: center;
   gap: 1rem;
   align-items: center;
-  background-color: #131324;
+  background-color: #0F5298;
   .brand {
     display: flex;
     align-items: center;
@@ -147,7 +147,7 @@ const FormContainer = styled.div`
       height: 5rem;
     }
     h1 {
-      color: white;
+      color: #D5F3FE;
       text-transform: uppercase;
     }
   }
@@ -163,18 +163,18 @@ const FormContainer = styled.div`
   input {
     background-color: transparent;
     padding: 1rem;
-    border: 0.1rem solid #4e0eff;
+    border: 0.1rem solid #0F5298;
     border-radius: 0.4rem;
     color: white;
     width: 100%;
     font-size: 1rem;
     &:focus {
-      border: 0.1rem solid #997af0;
+      border: 0.1rem solid #D5F3FE;
       outline: none;
     }
   }
   button {
-    background-color: #4e0eff;
+    background-color: #0F5298;
     color: white;
     padding: 1rem 2rem;
     border: none;
@@ -191,7 +191,7 @@ const FormContainer = styled.div`
     color: white;
     text-transform: uppercase;
     a {
-      color: #4e0eff;
+      color: #0F5298;
       text-decoration: none;
       font-weight: bold;
     }

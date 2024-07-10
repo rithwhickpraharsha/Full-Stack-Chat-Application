@@ -30,9 +30,8 @@ export default function Contacts({ contacts, changeChat }) {
               return (
                 <div
                   key={contact._id}
-                  className={`contact ${
-                    index === currentSelected ? "selected" : ""
-                  }`}
+                  className={`contact ${index === currentSelected ? "selected" : ""
+                    }`}
                   onClick={() => changeCurrentChat(index, contact)}
                 >
                   <div className="avatar">
@@ -68,7 +67,7 @@ const Container = styled.div`
   display: grid;
   grid-template-rows: 10% 75% 15%;
   overflow: hidden;
-  background-color: blue;
+  background-color: #3C99DC;
   .brand {
     display: flex;
     align-items: center;
@@ -88,6 +87,7 @@ const Container = styled.div`
     align-items: center;
     overflow: auto;
     gap: 0.8rem;
+    border-radius: 10px;
     &::-webkit-scrollbar {
       width: 0.2rem;
       &-thumb {
@@ -97,7 +97,7 @@ const Container = styled.div`
       }
     }
     .contact {
-      background-color: black;
+      background-color: gray;
       min-height: 5rem;
       cursor: pointer;
       width: 90%;
@@ -119,7 +119,7 @@ const Container = styled.div`
       }
     }
     .selected {
-      background-color: red;
+      background-color: black;
     }
   }
 
