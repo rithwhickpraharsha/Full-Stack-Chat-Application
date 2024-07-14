@@ -76,6 +76,7 @@ export const Update = () => {
       console.log(data);
       toast.success(data.data.message, toastOptions);
       socket.current.emit('UserUpdate');
+      console.log("Socket sent update to server");
 
       navigate("/");
     } catch (err) {

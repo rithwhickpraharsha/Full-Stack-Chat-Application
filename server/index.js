@@ -51,5 +51,6 @@ io.on("connection", (socket) => {
 
   socket.on("UserUpdate", (data) => {
     io.emit("UserUpdateReceived");
+    console.log("Server emitted update notif to all users")
   })
 });

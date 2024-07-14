@@ -34,7 +34,9 @@ export default function Chat() {
 
   useEffect(() => {
     if (socket.current) {
+
       socket.current.on("UserUpdateReceived", async () => {
+        console.log("updated received by the server ")
         if (currentUser) {
           if (currentUser.isAvatarImageSet) {
             const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
