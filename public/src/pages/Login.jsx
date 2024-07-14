@@ -10,6 +10,7 @@ import { loginRoute } from "../utils/APIRoutes";
 export default function Login() {
   const navigate = useNavigate();
   const [values, setValues] = useState({ username: "", password: "" });
+  const [load, setLoad] = useState(false);
   const toastOptions = {
     position: "bottom-right",
     autoClose: 8000,
@@ -55,6 +56,7 @@ export default function Login() {
           process.env.REACT_APP_LOCALHOST_KEY,
           JSON.stringify(data.user)
         );
+        setLoad(false);
 
         navigate("/");
       }
@@ -82,7 +84,7 @@ export default function Login() {
             name="password"
             onChange={(e) => handleChange(e)}
           />
-          <button type="submit">Log In</button>
+          <button type="submit" onClick={(e) => { setLoad(true) }}>Log In{(load) ? ' ...' : ""}</button>
           <span>
             Don't have an account ? <Link to="/register">Create One.</Link>
           </span>
