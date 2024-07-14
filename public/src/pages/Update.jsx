@@ -12,127 +12,128 @@ import { io } from "socket.io-client";
 
 
 export const Update = () => {
-    const navigate = useNavigate();
-    const api = `https://api.multiavatar.com/4645646`;
-    const socket = useRef();
+  const navigate = useNavigate();
+  const api = `https://api.multiavatar.com/4645646`;
+  const socket = useRef();
 
-    const [avatars, setAvatars] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [selectedAvatar, setSelectedAvatar] = useState(undefined);
-    const [values, setValues] = useState({ username: "", avatar: "" });
-    const [user_id, setId] = useState("");
-    const toastOptions = {
-        position: "bottom-right",
-        autoClose: 8000,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "dark",
-    };
-    useEffect(() => {
-        async function setAttr() {
-            const data = [];
-            socket.current = io(host);
-            for (let i = 0; i < 4; i++) {
-                const image = await axios.get(
-                    `${api}/${Math.round(Math.random() * 1000)}`
+  const [avatars, setAvatars] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedAvatar, setSelectedAvatar] = useState(undefined);
+  const [values, setValues] = useState({ username: "", avatar: "" });
+  const [user_id, setId] = useState("");
+  const toastOptions = {
+    position: "bottom-right",
+    autoClose: 8000,
+    pauseOnHover: true,
+    draggable: true,
+    theme: "dark",
+  };
+  useEffect(() => {
+    async function setAttr() {
+      const data = [];
+      socket.current = io(host);
+      for (let i = 0; i < 4; i++) {
+        const image = await axios.get(
+          `${api}/${Math.round(Math.random() * 1000)}`
+        );
+        const buffer = new Buffer(image.data);
+        data.push(buffer.toString("base64"));
+      }
+      setAvatars(data);
+      setIsLoading(false);
+      const userData_str = localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY
+      );
+      const userData = JSON.parse(userData_str);
+      if (userData) {
+        console.log(userData["username"]);
+        setId(userData._id);
+        const user = await axios.post(getUser, { userId: userData._id });
+        setValues({ username: user.data.user.username, avatar: user.data.user.username })
+      }
+      else {
+        navigate("/login");
+      }
+    }
+    setAttr();
+  }, [])
+
+
+  const handleChange = (event) => {
+    setValues({ ...values, [event.target.name]: event.target.value });
+    console.log(values);
+  };
+
+
+
+  const handleSubmit = async (event) => {
+
+    try {
+      if (user_id == "" || values.username == "" || values.avatar == "") {
+        toast.error("Dont leave Empty", toastOptions);
+        return;
+      }
+      const data = await axios.put(setUpdateRoute, { userId: user_id, username: values.username, avatar: values.avatar });
+      console.log(data);
+      toast.success(data.data.message, toastOptions);
+      socket.current.emit('UserUpdate');
+
+      navigate("/");
+    } catch (err) {
+      toast.error(err.response.data, toastOptions);
+    }
+
+  };
+
+  return (
+    <>
+      {isLoading ? (
+        <Container>
+          <img src={loader} alt="loader" className="loader" />
+        </Container>
+      ) : (
+        <FormContainer>
+          <div className="form">
+            <div className="brand">
+              <img src={Logo} alt="logo" />
+              <h1>Animic World</h1>
+            </div>
+            <input
+              type="text"
+              placeholder="Username"
+              value={values.username}
+              name="username"
+              onChange={(e) => handleChange(e)}
+              min="3"
+            />
+            <div className="avatars">
+              {avatars.map((avatar, index) => {
+                return (
+                  <div
+                    className={`avatar ${selectedAvatar === index ? "selected" : ""
+                      }`}
+                  >
+                    <img
+                      src={`data:image/svg+xml;base64,${avatar}`}
+                      alt="avatar"
+                      key={avatar}
+                      onClick={() => {
+                        setValues({ username: values.username, avatar: avatars[index] })
+                        setSelectedAvatar(index)
+                        console.log(values);
+                      }}
+                    />
+                  </div>
                 );
-                const buffer = new Buffer(image.data);
-                data.push(buffer.toString("base64"));
-            }
-            setAvatars(data);
-            setIsLoading(false);
-            const userData_str = localStorage.getItem('chat-app-current-user');
-            const userData = JSON.parse(userData_str);
-            if (userData) {
-                console.log(userData["username"]);
-                setId(userData._id);
-                const user = await axios.post(getUser, { userId: userData._id });
-                setValues({ username: user.data.user.username, avatar: user.data.user.username })
-            }
-            else {
-                navigate("/login");
-            }
-        }
-        setAttr();
-    }, [])
+              })}
+            </div>
 
+            <button type="submit" onClick={() => { handleSubmit() }}>Update Profile</button>
 
-    const handleChange = (event) => {
-        setValues({ ...values, [event.target.name]: event.target.value });
-        console.log(values);
-    };
-
-
-
-    const handleSubmit = async (event) => {
-
-        try {
-            if (user_id == "" || values.username == "" || values.avatar == "") {
-                toast.error("Dont leave Empty", toastOptions);
-                return;
-            }
-            const data = await axios.put(setUpdateRoute, { userId: user_id, username: values.username, avatar: values.avatar });
-            console.log(data);
-            toast.success(data.data.message, toastOptions);
-            socket.current.emit('UserUpdate');
-
-            navigate("/");
-        } catch (err) {
-            toast.error(err.response.data, toastOptions);
-        }
-
-    };
-
-    return (
-        <>
-            {isLoading ? (
-                <Container>
-                    <img src={loader} alt="loader" className="loader" />
-                </Container>
-            ) : (
-                <FormContainer>
-                    <div className="form">
-                        <div className="brand">
-                            <img src={Logo} alt="logo" />
-                            <h1>Animic World</h1>
-                        </div>
-                        <input
-                            type="text"
-                            placeholder="Username"
-                            value={values.username}
-                            name="username"
-                            onChange={(e) => handleChange(e)}
-                            min="3"
-                        />
-                        <div className="avatars">
-                            {avatars.map((avatar, index) => {
-                                return (
-                                    <div
-                                        className={`avatar ${selectedAvatar === index ? "selected" : ""
-                                            }`}
-                                    >
-                                        <img
-                                            src={`data:image/svg+xml;base64,${avatar}`}
-                                            alt="avatar"
-                                            key={avatar}
-                                            onClick={() => {
-                                                setValues({ username: values.username, avatar: avatars[index] })
-                                                setSelectedAvatar(index)
-                                                console.log(values);
-                                            }}
-                                        />
-                                    </div>
-                                );
-                            })}
-                        </div>
-
-                        <button type="submit" onClick={() => { handleSubmit() }}>Update Profile</button>
-
-                    </div>
-                </FormContainer>)}
-            <ToastContainer />
-        </>
-    );
+          </div>
+        </FormContainer>)}
+      <ToastContainer />
+    </>
+  );
 }
 const Container = styled.div`
   display: flex;
